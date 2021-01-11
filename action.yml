@@ -1,0 +1,14 @@
+name: 'rx-elf-gcc'
+description: 'Set up rx-elf-gcc and add it to the PATH'
+author: 'Ryan Winter <ryanwinter@outlook.com>'
+inputs:
+  release:
+    description: 'GNU Embedded Toolchain for Rx release name'
+  directory:
+    description: 'Directory to unpack GCC to. Defaults to a temporary directory.'
+runs:
+  using: 'node12'
+  main: 'dist/index.js'
+branding:
+  icon: 'download'
+  color: 'green'
