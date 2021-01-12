@@ -21,16 +21,16 @@ test('test url response', async () => {
   const url = gcc.distributionUrl('8.3.0.202004', 'linux')
   const resp = await fetch(url)
   expect(resp.status).toStrictEqual(200)
-  expect(Number(resp.headers.get('Content-Length'))).toEqual(104170189)
+  expect(Number(resp.headers.get('Content-Length'))).toEqual(419928605)
 })
 
 function hasGcc(dir: string): boolean {
   for (const filename of ['rx-elf-gcc', 'rx-elf-gcc.exe']) {
-    const exe = path.join(dir, 'rx-elf', 'rx-elf', 'bin', filename))
+    const exe = path.join(dir, 'bin', filename)
+    console.log(`looking in ${exe}`)
     if (fs.existsSync(exe)) {
       console.log(`bin exists`)
       return true
-    
     }
   }
   return false
@@ -40,7 +40,6 @@ async function tmpInstall(release: string, platform?: string): Promise<void> {
   const dir = tmp.dirSync()
   const gccDir = path.join(dir.name, `gcc-${release}`)
   await setup.install(release, gccDir, platform)
-  // make sure there's a bin/arm-none-eabi-gcc[.exe] at gccDir
   expect(hasGcc(gccDir)).toEqual(true)
   dir.removeCallback()
 }
@@ -50,5 +49,5 @@ test(
   async () => {
     await tmpInstall('8.3.0.202004', 'linux')
   },
-  40 * 60 * 1000
+  10 * 60 * 1000
 )

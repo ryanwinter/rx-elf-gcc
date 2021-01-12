@@ -3,59 +3,55 @@ import * as fs from 'fs'
 import * as url from 'url'
 import * as path from 'path'
 import fetch from 'node-fetch'
-import { execSync } from 'child_process';
-
+import * as child from 'child_process'
 import * as gcc from '../src/gcc'
 
 function getExtension(s: string): string {
-  return s.split('.').pop().toLowerCase()
+  const u = url.parse(s)
+  const components = u.path?.split('.')
+
+  if (components && components?.length > 0) {
+    return components[components?.length - 1].toLowerCase()
+  }
+
+  return ''
 }
 
 function getFileName(s: string): string {
-  return s.split('\\').pop().split('/').pop();
+  const u = url.parse(s)
+  const components = u.path?.split('/')
+
+  if (components && components?.length > 0) {
+    return components[components?.length - 1]
+  }
+
+  return ''
 }
 
 export async function install(release: string, directory: string, platform?: string): Promise<void> {
   const distUrl = gcc.distributionUrl(release, platform || process.platform)
-  
+  const filePath = path.join(directory, getFileName(distUrl))
+
   console.log(`downloading gcc ${release} from ${distUrl}`)
+
+  await fs.promises.mkdir(directory, {recursive: true})
+
   const res = await fetch(distUrl)
-  const fileStream = fs.createWriteStream(directory);
+  const fileStream = fs.createWriteStream(filePath)
   await new Promise((resolve, reject) => {
-    res.body.pipe(fileStream);
-    res.body.on("error", reject);
-    fileStream.on("finish", resolve);
-  });
+    res.body.pipe(fileStream)
+    res.body.on('error', reject)
+    fileStream.on('finish', resolve)
+  })
 
-//  if (resp.status !== 200) {
-//    throw new Error(`invalid HTTP response code ${resp.status}`)
-  //}
+  fs.chmodSync(filePath, '755')
 
-//  console.log(`extracting to ${directory}`)
-//  await fs.promises.mkdir(directory, {recursive: true})
-  
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-//  let extractor: any
   switch (getExtension(distUrl)) {
     case 'run':
-      const consolepath = path.join(directory, getFileName(distUrl))
-      console.log(`executing ${consolepath}`)
-      execSync(path.join(directory, getFileName(distUrl)))
-      // stderr is sent to stderr of parent process
-      // you can set options.stdio if you want it to go elsewhere
-  //    let stdout = execSync('ls'); 
-//      extractor = unzipper.Extract({path: directory})
-//      resp.body.pipe(extractor)
+      console.log('executing', filePath)
+      child.execSync(`${filePath} -y -p ${directory}`)
       break
     default:
       throw new Error(`unknown extension ${getExtension(distUrl)}`)
   }
-
-/*  await new Promise(function(resolve, reject) {
-    // unzipper
-    extractor.on('close', resolve)
-    // tar
-    extractor.on('end', resolve)
-    extractor.on('error', reject)
-  })*/
 }

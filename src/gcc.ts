@@ -1,6 +1,5 @@
 const versions: {[key: string]: string} = {
-  '8.3.0.202004-GNURX-ELF':
-    'https://gcc-renesas.com/downloads/get.php?f=rx/8.3.0.202004-gnurx/gcc-8.3.0.202004-GNURX-ELF.${EXT}'
+  '8.3.0.202004': 'https://gcc-renesas.com/downloads/get.php?f=rx/8.3.0.202004-gnurx/gcc-8.3.0.202004-GNURX-ELF.${EXT}',
 }
 
 export function availableVersions(): string[] {

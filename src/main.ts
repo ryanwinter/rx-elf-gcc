@@ -1,6 +1,5 @@
 import * as core from '@actions/core'
 import * as path from 'path'
-import * as fs from 'fs'
 
 import tmp from 'tmp'
 
@@ -18,7 +17,7 @@ async function run(): Promise<void> {
       directory = path.join(tmpDir.name, `gcc-${release}`)
     }
     await setup.install(release, directory)
-    core.addPath(path.join(directory, 'rx-elf', 'rx-elf', 'bin'))
+    core.addPath(path.join(directory, 'bin'))
   } catch (error) {
     core.setFailed(error.message)
   }
