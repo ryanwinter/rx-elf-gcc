@@ -11,7 +11,7 @@ This action downloads and sets up rx-elf-gcc, adding it to the PATH. It works on
 ```yaml
 steps:
 - name: rx-elf-gcc
-- uses: ryanwinter/rx-elf-gcc@master
+- uses: ryanwinter/rx-elf-gcc@main
   with:
     release: '8.3.0.202004'
 - run: ...
